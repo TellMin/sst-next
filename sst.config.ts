@@ -1,5 +1,5 @@
 import { SSTConfig } from "sst";
-import { Api, Bucket, NextjsSite } from "sst/constructs";
+import { Auth, Api, Bucket, NextjsSite, Config } from "sst/constructs";
 
 export default {
   config(_input) {
@@ -19,8 +19,27 @@ export default {
         },
       });
 
+      // Add a secret to stacks
+      const GOOGLE_CLIENT_ID = new Config.Secret(stack, "GOOGLE_CLIENT_ID");
+
+      // Add auth to the app
+      const auth = new Auth(stack, "auth", {
+        authenticator: {
+          handler: "app/api/auth.handler",
+          bind: [GOOGLE_CLIENT_ID],
+        },
+      });
+
+      auth.attach(stack, {
+        api,
+        prefix: "/auth",
+      });
+
       const site = new NextjsSite(stack, "site", {
-        bind: [bucket, api],
+        bind: [bucket, api, auth],
+        environment: {
+          NEXT_PUBLIC_APP_API_URL: api.url,
+        },
       });
 
       stack.addOutputs({
