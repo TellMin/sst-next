@@ -1,4 +1,4 @@
-import { AuthHandler, GoogleAdapter } from "sst/node/auth";
+import { AuthHandler, GoogleAdapter, Session } from "sst/node/auth";
 import { Config } from "sst/node/config";
 
 export const handler = AuthHandler({
@@ -7,11 +7,23 @@ export const handler = AuthHandler({
       mode: "oidc",
       clientID: Config.GOOGLE_CLIENT_ID,
       onSuccess: async (tokenset) => {
-        return {
-          statusCode: 200,
-          body: JSON.stringify(tokenset.claims(), null, 4),
-        };
+        const claims = tokenset.claims();
+        return Session.parameter({
+          redirect: "http://localhost:3000",
+          type: "user",
+          properties: {
+            userID: claims.sub,
+          },
+        });
       },
     }),
   },
 });
+
+declare module "sst/node/auth" {
+  export interface SessionTypes {
+    user: {
+      userID: string;
+    };
+  }
+}
