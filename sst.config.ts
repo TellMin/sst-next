@@ -1,5 +1,5 @@
 import { SSTConfig } from "sst";
-import { Auth, Api, Bucket, NextjsSite, Config } from "sst/constructs";
+import { Auth, Api, Bucket, NextjsSite, Config, Table } from "sst/constructs";
 
 export default {
   config(_input) {
@@ -13,7 +13,19 @@ export default {
       // Add an S3 bucket to the app
       const bucket = new Bucket(stack, "public");
 
+      const table = new Table(stack, "users", {
+        fields: {
+          userId: "string",
+        },
+        primaryIndex: { partitionKey: "userId" },
+      });
+
       const api = new Api(stack, "api", {
+        defaults: {
+          function: {
+            bind: [table],
+          },
+        },
         routes: {
           "GET /": "app/api/time.handler",
         },
