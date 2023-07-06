@@ -4,12 +4,17 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [session, setSession] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
 
   const getSession = async () => {
     const token = localStorage.getItem("session");
     if (token) {
       setSession(token);
+      const user = await getUserInfo(token);
+      if (user) setUser(user);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -26,17 +31,43 @@ export default function Home() {
     }
   }, []);
 
+  const getUserInfo = async (session: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_API_URL}/session`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session}`,
+          },
+        }
+      );
+      return response.json();
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   const signOut = async () => {
     localStorage.removeItem("session");
     setSession("");
   };
 
+  if (loading) return <div className="container">Loading...</div>;
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <h1>SST Auth</h1>
       {session ? (
-        <div>
-          <p>Yeah! You are signed in.</p>
+        <div className="profile">
+          <img
+            src={user?.picture}
+            style={{ borderRadius: "50%" }}
+            width={100}
+            height={100}
+            alt=""
+          />
+          <p>{user?.email}</p>
           <button onClick={signOut}>Sign out</button>
         </div>
       ) : (

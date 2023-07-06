@@ -1,5 +1,6 @@
 import { AuthHandler, GoogleAdapter, Session } from "sst/node/auth";
 import { Config } from "sst/node/config";
+import { Api } from "sst/node/api";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { Table } from "sst/node/table";
@@ -26,7 +27,9 @@ export const handler = AuthHandler({
         );
 
         return Session.parameter({
-          redirect: "http://localhost:3000",
+          redirect: process.env.IS_LOCAL
+            ? "http://localhost:3000"
+            : Api.api.url,
           type: "user",
           properties: {
             userID: claims.sub,

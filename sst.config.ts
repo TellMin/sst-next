@@ -28,6 +28,7 @@ export default {
         },
         routes: {
           "GET /": "app/api/time.handler",
+          "GET /session": "app/api/session.handler",
         },
       });
 
