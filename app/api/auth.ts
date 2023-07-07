@@ -9,6 +9,7 @@ export const handler = AuthHandler({
   providers: {
     google: GoogleAdapter({
       mode: "oidc",
+      // @ts-ignore
       clientID: Config.GOOGLE_CLIENT_ID,
       onSuccess: async (tokenset) => {
         const claims = tokenset.claims();
@@ -16,6 +17,7 @@ export const handler = AuthHandler({
         const ddb = new DynamoDBClient({});
         await ddb.send(
           new PutItemCommand({
+            // @ts-ignore
             TableName: Table.users.tableName,
             Item: marshall({
               userId: claims.sub,
@@ -29,7 +31,8 @@ export const handler = AuthHandler({
         return Session.parameter({
           redirect: process.env.IS_LOCAL
             ? "http://localhost:3000"
-            : Api.api.url,
+            : // @ts-ignore
+              Api.api.url,
           type: "user",
           properties: {
             userID: claims.sub,
