@@ -31,8 +31,7 @@ export const handler = AuthHandler({
         return Session.parameter({
           redirect: process.env.IS_LOCAL
             ? "http://localhost:3000"
-            : // @ts-ignore
-              Api.api.url,
+            : "https://d3cgj8iibxpd5t.cloudfront.net",
           type: "user",
           properties: {
             userID: claims.sub,

@@ -27,8 +27,8 @@ export default {
           },
         },
         routes: {
-          "GET /": "app/api/time.handler",
-          "GET /session": "app/api/session.handler",
+          "GET /": "app/_api/time.handler",
+          "GET /session": "app/_api/session.handler",
         },
       });
 
@@ -38,7 +38,7 @@ export default {
       // Add auth to the app
       const auth = new Auth(stack, "auth", {
         authenticator: {
-          handler: "app/api/auth.handler",
+          handler: "app/_api/auth.handler",
           bind: [GOOGLE_CLIENT_ID],
         },
       });
