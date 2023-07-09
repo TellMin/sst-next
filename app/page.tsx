@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAtom } from "jotai";
+import { tokenAtom } from "@/atoms/atom";
+import Jotai from "@/app/_components/jotai";
 
 export default function Home() {
-  const [session, setSession] = useState("");
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useAtom(tokenAtom);
 
   const getSession = async () => {
     const token = localStorage.getItem("session");
     if (token) {
-      setSession(token);
+      setToken(token);
       const user = await getUserInfo(token);
       if (user) setUser(user);
     }
@@ -50,7 +53,7 @@ export default function Home() {
 
   const signOut = async () => {
     localStorage.removeItem("session");
-    setSession("");
+    setToken("");
   };
 
   if (loading) return <div className="container">Loading...</div>;
@@ -58,7 +61,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <h1>SST Auth</h1>
-      {session ? (
+      {token ? (
         <div className="profile">
           <img
             src={user?.picture}
@@ -80,6 +83,7 @@ export default function Home() {
           </a>
         </div>
       )}
+      <Jotai />
     </main>
   );
 }
