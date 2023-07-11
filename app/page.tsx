@@ -1,38 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { tokenAtom } from "@/atoms/atom";
-import Jotai from "@/app/_components/jotai";
+import AuthProvider from "@/app/_components/authProvider";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const [token, setToken] = useAtom(tokenAtom);
-
-  const getSession = async () => {
-    const token = localStorage.getItem("session");
-    if (token) {
-      setToken(token);
-      const user = await getUserInfo(token);
-      if (user) setUser(user);
-    }
-    setLoading(false);
-  };
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    const getSession = async () => {
+      if (token) {
+        const user = await getUserInfo(token);
+        if (user) {
+          setUser(user);
+        }
+      }
+      setLoading(false);
+    };
     getSession();
-  }, []);
-
-  useEffect(() => {
-    const search = window.location.search;
-    const params = new URLSearchParams(search);
-    const token = params.get("token");
-    if (token) {
-      localStorage.setItem("session", token);
-      window.location.replace(window.location.origin);
-    }
-  }, []);
+  }, [token, setUser]);
 
   const getUserInfo = async (session: string) => {
     try {
@@ -46,9 +35,7 @@ export default function Home() {
         }
       );
       return response.json();
-    } catch (error) {
-      alert(error);
-    }
+    } catch (error) {}
   };
 
   const signOut = async () => {
@@ -56,12 +43,12 @@ export default function Home() {
     setToken("");
   };
 
-  if (loading) return <div className="container">Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>SST Auth</h1>
-      {token ? (
+    <AuthProvider>
+      <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <h1>SST Auth</h1>
         <div className="profile">
           <img
             src={user?.picture}
@@ -73,17 +60,7 @@ export default function Home() {
           <p>{user?.email}</p>
           <button onClick={signOut}>Sign out</button>
         </div>
-      ) : (
-        <div>
-          <a
-            href={`${process.env.NEXT_PUBLIC_APP_API_URL}/auth/google/authorize`}
-            rel="noreferrer"
-          >
-            <button>Sign in with Google</button>
-          </a>
-        </div>
-      )}
-      <Jotai />
-    </main>
+      </main>
+    </AuthProvider>
   );
 }
