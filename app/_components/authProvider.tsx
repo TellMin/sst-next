@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { tokenAtom } from "@/atoms/atom";
 
@@ -10,6 +10,7 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const [token, setToken] = useAtom(tokenAtom);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const search = window.location.search;
@@ -27,9 +28,14 @@ export default function AuthProvider({
       if (token) {
         setToken(token);
       }
+      setLoading(false);
     };
     getSession();
   }, [setToken]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   if (!token)
     return (
