@@ -2,8 +2,8 @@
 
 import { useAtom } from "jotai";
 import { tokenAtom } from "@/atoms/atom";
-import AuthProvider from "@/app/_components/authProvider";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const [token, setToken] = useAtom(tokenAtom);
@@ -46,21 +46,20 @@ export default function Home() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <AuthProvider>
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <h1>SST Auth</h1>
-        <div className="profile">
-          <img
-            src={user?.picture}
-            style={{ borderRadius: "50%" }}
-            width={100}
-            height={100}
-            alt=""
-          />
-          <p>{user?.email}</p>
-          <button onClick={signOut}>Sign out</button>
-        </div>
-      </main>
-    </AuthProvider>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <h1>SST Auth</h1>
+      <div className="profile">
+        <img
+          src={user?.picture}
+          style={{ borderRadius: "50%" }}
+          width={100}
+          height={100}
+          alt=""
+        />
+        <p>{user?.email}</p>
+        <button onClick={signOut}>Sign out</button>
+      </div>
+      <Link href="/chat">go to Chat page</Link>
+    </main>
   );
 }
