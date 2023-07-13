@@ -20,15 +20,19 @@ export default {
         primaryIndex: { partitionKey: "userId" },
       });
 
+      // Add a secred to connect open ai
+      const OPENAI_API_KEY = new Config.Secret(stack, "OPENAI_API_KEY");
+
       const api = new Api(stack, "api", {
         defaults: {
           function: {
-            bind: [table],
+            bind: [table, OPENAI_API_KEY],
           },
         },
         routes: {
           "GET /": "app/_api/time.handler",
           "GET /session": "app/_api/session.handler",
+          "POST /chat": "app/_api/chat.handler",
         },
       });
 

@@ -28,10 +28,12 @@
     "@aws-sdk/s3-request-presigner": "^3.363.0",
     "@aws-sdk/util-dynamodb": "^3.365.0",
     "@swc-jotai/react-refresh": "^0.0.8",
+    "ai": "^2.1.18",
     "aws-cdk-lib": "2.84.0",
     "aws-sdk": "^2.1409.0",
     "constructs": "10.1.156",
     "jotai": "^2.2.2",
+    "openai-edge": "^1.2.0",
     "sst": "^2.18.1"
   }
 }
