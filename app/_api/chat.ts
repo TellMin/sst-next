@@ -1,7 +1,7 @@
 import { ApiHandler, useJsonBody } from "sst/node/api";
 import { useSession } from "sst/node/auth";
 import { Config } from "sst/node/config";
-const { Configuration, OpenAIApi } = require("openai");
+import { Configuration, OpenAIApi } from "openai";
 
 const configuration = new Configuration({
   // @ts-ignore

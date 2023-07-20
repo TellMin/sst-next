@@ -1,19 +1,30 @@
 "use client";
 
 import { useAtom } from "jotai";
+import { useState } from "react";
 import { tokenAtom } from "@/atoms/atom";
+import type { ChatCompletionRequestMessage } from "openai";
 
 export default function Chat() {
   const [token, setToken] = useAtom(tokenAtom);
+  const [response, setResponse] = useState<string>("");
 
-  const chat = async (messages: any) => {
+  const chat = async (message: string) => {
+    const messages: Array<ChatCompletionRequestMessage> = [
+      {
+        role: "user",
+        content: message,
+      },
+    ];
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/chat`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      body: messages,
+      body: JSON.stringify({ messages }),
     });
+    setResponse((await res.json()).choices[0].text);
   };
 
   return (
@@ -23,13 +34,14 @@ export default function Chat() {
         onSubmit={(e) => {
           e.preventDefault();
           const formData = new FormData(e.target as HTMLFormElement);
-          const messages = formData.get("messages");
-          chat(messages);
+          const message = formData.get("message")?.toString() ?? "";
+          chat(message);
         }}
       >
-        <input type="text" name="messages" />
+        <input type="text" name="message" />
         <button type="submit">Send</button>
       </form>
+      <div>{response}</div>
     </div>
   );
 }
